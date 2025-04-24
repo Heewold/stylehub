@@ -7,6 +7,9 @@ from django.shortcuts import get_object_or_404
 from .cart import Cart
 from .forms import OrderCreateForm
 from .models import OrderItem
+from .models import Order
+from .forms import UserEditForm, ProfileEditForm
+
 
 def register(request):
     if request.method == 'POST':
@@ -74,7 +77,7 @@ def cart_detail(request):
 def order_create(request):
     cart = Cart(request)
     if request.method == 'POST':
-        form = OrderCreateForm(request.POST)
+        form = OrderCreateForm(request.POST or None, user=request.user)
         if form.is_valid():
             order = form.save(commit=False)
             order.user = request.user
@@ -91,3 +94,31 @@ def order_create(request):
     else:
         form = OrderCreateForm()
     return render(request, 'main/order_create.html', {'form': form, 'cart': cart})
+
+@login_required
+def order_history(request):
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+
+    # Добавляем поле total в каждый заказ
+    for order in orders:
+        order.total = sum(item.get_cost() for item in order.items.all())
+
+    return render(request, 'main/order_history.html', {'orders': orders})
+
+@login_required
+def edit_profile(request):
+    if request.method == 'POST':
+        user_form = UserEditForm(request.POST, instance=request.user)
+        profile_form = ProfileEditForm(request.POST, instance=request.user.profile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            return redirect('profile')
+    else:
+        user_form = UserEditForm(instance=request.user)
+        profile_form = ProfileEditForm(instance=request.user.profile)
+
+    return render(request, 'main/edit_profile.html', {
+        'user_form': user_form,
+        'profile_form': profile_form,
+    })

@@ -1,9 +1,36 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Оформление заказа</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit" class="btn btn-success">Оформить</button>
-</form>
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="form-card">
+      <h3 class="text-center mb-4">
+        <i class="bi bi-check-circle-fill text-success me-2"></i>Оформление заказа
+      </h3>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="mb-3">
+          {{ form.name.label_tag }}
+          {{ form.name }}
+          {{ form.name.errors }}
+        </div>
+        <div class="mb-3">
+          {{ form.phone.label_tag }}
+          {{ form.phone }}
+          {{ form.phone.errors }}
+        </div>
+        <div class="mb-3">
+          {{ form.address.label_tag }}
+          {{ form.address }}
+          {{ form.address.errors }}
+        </div>
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-success btn-lg">
+            <i class="bi bi-credit-card-2-back"></i> Оформить заказ
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}
