@@ -5,13 +5,18 @@
     <div class="card shadow">
       {% if product.image %}
         <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+      {% else %}
+        <img src="https://via.placeholder.com/600x400" class="card-img-top" alt="Нет фото">
       {% endif %}
       <div class="card-body">
         <h3 class="card-title">{{ product.name }}</h3>
         <p class="card-text">{{ product.description }}</p>
         <h4 class="fw-bold">{{ product.price }} ₽</h4>
         <p><span class="badge bg-secondary">{{ product.category.name }}</span></p>
-        <a href="#" class="btn btn-primary">Добавить в корзину</a>
+        <a href="{% url 'cart_add' product.id %}" class="btn btn-primary">
+          <i class="bi bi-cart-plus"></i> В корзину
+        </a>
+        <a href="{% url 'product_list' %}" class="btn btn-outline-secondary ms-2">← Назад к каталогу</a>
       </div>
     </div>
   </div>

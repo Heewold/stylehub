@@ -4,6 +4,9 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .models import Product, Category
 from django.shortcuts import get_object_or_404
+from .cart import Cart
+from .forms import OrderCreateForm
+from .models import OrderItem
 
 def register(request):
     if request.method == 'POST':
@@ -50,3 +53,41 @@ def product_list(request, category_slug=None):
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
     return render(request, 'main/product_detail.html', {'product': product})
+
+def cart_add(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    cart = Cart(request)
+    cart.add(product=product)
+    return redirect('cart_detail')
+
+def cart_remove(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    cart = Cart(request)
+    cart.remove(product)
+    return redirect('cart_detail')
+
+def cart_detail(request):
+    cart = Cart(request)
+    return render(request, 'main/cart_detail.html', {'cart': cart})
+
+@login_required
+def order_create(request):
+    cart = Cart(request)
+    if request.method == 'POST':
+        form = OrderCreateForm(request.POST)
+        if form.is_valid():
+            order = form.save(commit=False)
+            order.user = request.user
+            order.save()
+            for item in cart:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item['product'],
+                    price=item['price'],
+                    quantity=item['quantity']
+                )
+            cart.clear()
+            return render(request, 'main/order_created.html', {'order': order})
+    else:
+        form = OrderCreateForm()
+    return render(request, 'main/order_create.html', {'form': form, 'cart': cart})
