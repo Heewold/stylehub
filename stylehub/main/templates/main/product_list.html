@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="text-center mb-4">Наши товары</h2>
+
+<div class="row mb-4">
+  <div class="col-md-3">
+    <h5 class="mb-3">Категории</h5>
+    <ul class="list-group">
+      <li class="list-group-item {% if not category %}active{% endif %}">
+        <a href="{% url 'product_list' %}" class="{% if not category %}text-white{% endif %} text-decoration-none">Все</a>
+      </li>
+      {% for cat in categories %}
+        <li class="list-group-item {% if category == cat %}active{% endif %}">
+          <a href="{% url 'product_list_by_category' cat.slug %}" class="{% if category == cat %}text-white{% endif %} text-decoration-none">{{ cat.name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="col-md-9">
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      {% for product in products %}
+        <div class="col">
+          <a href="{% url 'product_detail' product.pk %}" class="text-decoration-none text-dark">
+            <div class="card h-100 shadow-sm">
+              {% if product.image %}
+                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+              {% else %}
+                <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Нет фото">
+              {% endif %}
+              <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">{{ product.description|truncatewords:15 }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="fw-bold">{{ product.price }} ₽</span>
+                  <span class="badge bg-secondary">{{ product.category.name }}</span>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+      {% empty %}
+        <p class="text-muted">Нет товаров в этой категории.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
