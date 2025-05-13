@@ -9,7 +9,7 @@ class OrderCreateForm(forms.ModelForm):
         fields = ['name', 'phone', 'address']
 
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)  # получим пользователя, если передали
+        user = kwargs.pop('user', None)  # получение пользователя, если передали
         super().__init__(*args, **kwargs)
 
         # Стилизация Bootstrap

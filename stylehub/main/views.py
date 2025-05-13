@@ -9,6 +9,8 @@ from .forms import OrderCreateForm
 from .models import OrderItem
 from .models import Order
 from .forms import UserEditForm, ProfileEditForm
+from django.db.models import Q
+from decimal import Decimal
 
 
 def register(request):
@@ -55,7 +57,19 @@ def product_list(request, category_slug=None):
 
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
-    return render(request, 'main/product_detail.html', {'product': product})
+
+    # рекомендации: товары той же категории, похожие по цене (±30%)
+    recommended_products = Product.objects.filter(
+        Q(category=product.category),
+        ~Q(id=product.id),
+        Q(price__gte=product.price * Decimal('0.7')),
+        Q(price__lte=product.price * Decimal('1.3'))
+    )[:4]
+
+    return render(request, 'main/product_detail.html', {
+        'product': product,
+        'recommended_products': recommended_products
+    })
 
 def cart_add(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -122,3 +136,10 @@ def edit_profile(request):
         'user_form': user_form,
         'profile_form': profile_form,
     })
+
+def product_search(request):
+    query = request.GET.get('q')
+    products = Product.objects.filter(
+        Q(name__icontains=query) | Q(description__icontains=query)
+    ) if query else Product.objects.none()
+    return render(request, 'main/product_search.html', {'products': products, 'query': query})

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load price_format %}
 {% block content %}
 <h2 class="mb-4"><i class="bi bi-receipt"></i> Мои заказы</h2>
 
@@ -12,25 +13,21 @@
       <ul class="list-group list-group-flush">
         {% for item in order.items.all %}
           <li class="list-group-item d-flex justify-content-between align-items-center">
-            {{ item.product.name }} ({{ item.quantity }} × {{ item.price }} ₽)
-            <span class="fw-bold">{{ item.get_cost }} ₽</span>
+            {{ item.product.name }} ({{ item.quantity }} × {{ item.price|nice_price }})
+            <span class="fw-bold text-end font-monospace">{{ item.get_cost|nice_price }}</span>
           </li>
         {% endfor %}
       </ul>
 
       <div class="card-footer text-end">
-        <strong>Итого: {{ order.total }} ₽</strong>
+        <strong class="text-end font-monospace">Итого: {{ order.total|nice_price }}</strong>
       </div>
     </div>
   {% endfor %}
 {% else %}
-  <div class="alert alert-info text-center">
-    У вас пока нет заказов.
-  </div>
+  <div class="alert alert-info text-center">У вас пока нет заказов.</div>
   <div class="text-center">
-    <a href="{% url 'product_list' %}" class="btn btn-outline-primary">
-      ← Вернуться в каталог
-    </a>
+    <a href="{% url 'product_list' %}" class="btn btn-outline-primary">← Вернуться в каталог</a>
   </div>
 {% endif %}
 {% endblock %}

@@ -38,6 +38,13 @@
             <a class="navbar-brand fw-bold" href="{% url 'product_list' %}">
                 <i class="bi bi-bag-fill me-1"></i>StyleHub
             </a>
+
+            <!-- Поиск -->
+            <form method="get" action="{% url 'product_search' %}" class="d-flex me-3">
+                <input name="q" class="form-control form-control-sm me-2" type="search" placeholder="Поиск..." aria-label="Поиск">
+                <button class="btn btn-outline-light btn-sm" type="submit"><i class="bi bi-search"></i></button>
+            </form>
+
             <div class="d-flex align-items-center">
                 <!-- Тема -->
                 <button id="themeToggle" class="btn btn-sm btn-outline-light me-3">
@@ -84,7 +91,7 @@
         </div>
     </nav>
 
-    <div class="container">
+    <div class="container mt-4">
         {% block content %}{% endblock %}
     </div>
 
