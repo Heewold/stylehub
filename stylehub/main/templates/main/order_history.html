@@ -10,21 +10,30 @@
             <span>Заказ №{{ order.id }}</span>
             <small class="text-muted">{{ order.created|date:"d.m.Y H:i" }}</small>
         </div>
-        <ul class="list-group list-group-flush">
-            {% for item in order.items.all %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                    <strong>{{ item.product.name }}</strong>
-                    {% if item.size %}
-                        <small class="text-muted">(размер: {{ item.size }})</small>
-                    {% endif %}
-                    <br>
-                    <small>{{ item.quantity }} × {{ item.price|nice_price }}</small>
-                </div>
-                <span class="fw-bold">{{ item.get_cost|nice_price }}</span>
-            </li>
-            {% endfor %}
-        </ul>
+
+        <!-- ✅ Данные о заказе -->
+        <div class="card-body">
+            <p class="mb-1"><strong>Имя:</strong> {{ order.name }}</p>
+            <p class="mb-1"><strong>Телефон:</strong> {{ order.phone }}</p>
+            <p class="mb-3"><strong>Адрес доставки:</strong> {{ order.address }}</p>
+
+            <ul class="list-group list-group-flush">
+                {% for item in order.items.all %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ item.product.name }}</strong>
+                        {% if item.size %}
+                            <small class="text-muted">(размер: {{ item.size }})</small>
+                        {% endif %}
+                        <br>
+                        <small>{{ item.quantity }} × {{ item.price|nice_price }}</small>
+                    </div>
+                    <span class="fw-bold">{{ item.get_cost|nice_price }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
         <div class="card-footer text-end">
             <strong>Итого: {{ order.get_total_cost|nice_price }}</strong>
         </div>

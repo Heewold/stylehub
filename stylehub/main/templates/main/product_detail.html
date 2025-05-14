@@ -2,38 +2,59 @@
 {% load price_format %}
 {% block content %}
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-5">
         {% if product.image %}
-            <img src="{{ product.image.url }}" class="img-fluid rounded shadow-sm" alt="{{ product.name }}">
+        <img src="{{ product.image.url }}" class="img-fluid rounded shadow-sm" alt="{{ product.name }}">
         {% else %}
-            <img src="https://via.placeholder.com/600x400" class="img-fluid rounded shadow-sm" alt="Нет фото">
+        <img src="https://via.placeholder.com/400x400?text=Нет+фото" class="img-fluid rounded shadow-sm" alt="Нет фото">
         {% endif %}
     </div>
-
-    <div class="col-md-6">
+    <div class="col-md-7">
         <h2>{{ product.name }}</h2>
         <p class="text-muted">{{ product.category.name }}</p>
-        <h4 class="text-success">{{ product.price|nice_price }}</h4>
+        <h4 class="my-3">{{ product.price|nice_price }}</h4>
+        <p>{{ product.description|default:"Нет описания." }}</p>
 
-        <p class="mt-4">{{ product.description }}</p>
-
-        <form method="post" action="{% url 'cart_add' product.id %}" class="mt-4">
+        <form action="{% url 'cart_add' product.id %}" method="post" class="mt-4">
             {% csrf_token %}
-            {% if product.get_sizes_list %}
+            {% if sizes %}
             <div class="mb-3">
-                <label for="size" class="form-label">Выберите размер</label>
-                <select name="size" id="size" class="form-select form-select-sm" required>
-                    <option value="">---</option>
-                    {% for size in product.get_sizes_list %}
-                        <option value="{{ size }}">{{ size }}</option>
+                <label for="size" class="form-label">Выберите размер:</label>
+                <select name="size" id="size" class="form-select" required>
+                    <option value="">-- выберите --</option>
+                    {% for size in sizes %}
+                    <option value="{{ size }}">{{ size }}</option>
                     {% endfor %}
                 </select>
             </div>
             {% endif %}
-            <button type="submit" class="btn btn-primary w-100"><i class="bi bi-cart-plus"></i> В корзину</button>
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-cart-plus"></i> Добавить в корзину
+            </button>
         </form>
-
-        <a href="{% url 'product_list' %}" class="btn btn-outline-secondary mt-3"><i class="bi bi-arrow-left"></i> Вернуться к каталогу</a>
     </div>
 </div>
+
+<!-- ✅ Похожие товары -->
+{% if similar_products %}
+<h4 class="mt-5 mb-3"><i class="bi bi-stars"></i> Похожие товары</h4>
+<div class="row row-cols-1 row-cols-md-4 g-4">
+    {% for product in similar_products %}
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+            {% else %}
+            <img src="https://via.placeholder.com/400x400?text=Нет+фото" class="card-img-top" alt="Нет фото">
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text mt-auto">{{ product.price|nice_price }}</p>
+                <a href="{% url 'product_detail' product.id %}" class="btn btn-sm btn-outline-primary mt-2">Подробнее</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 {% endblock %}

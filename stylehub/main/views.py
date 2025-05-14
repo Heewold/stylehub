@@ -17,7 +17,6 @@ from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.shortcuts import redirect
 
-
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -48,54 +47,60 @@ def profile(request):
     return render(request, 'main/profile.html')
 
 def product_list(request, category_slug=None):
-    category = None
-    categories = Category.objects.all()
     products = Product.objects.all()
+    categories = Category.objects.all()
+    category = None
 
-    if category_slug:
+    # ✅ Фильтр по категории из формы
+    selected_category = request.GET.get('category')
+    if selected_category:
+        category = get_object_or_404(Category, id=selected_category)
+        products = products.filter(category=category)
+    elif category_slug:
         category = get_object_or_404(Category, slug=category_slug)
         products = products.filter(category=category)
 
-    # Фильтр по цене
+    # ✅ Фильтр по цене
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
-
     if min_price:
         products = products.filter(price__gte=min_price)
     if max_price:
         products = products.filter(price__lte=max_price)
 
-    # ✅ Пагинация
-    paginator = Paginator(products, 9)  # по 9 товаров на страницу
+    paginator = Paginator(products, 9)  # Пагинация (9 товаров на страницу)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'main/product_list.html', {
-        'category': category,
+    context = {
+        'products': page_obj,
         'categories': categories,
-        'products': page_obj,    # передаём page_obj вместо products
-        'page_obj': page_obj,
-        'min_price': min_price or '',
-        'max_price': max_price or ''
-    })
+        'category': category,
+        'min_price': min_price,
+        'max_price': max_price,
+        'selected_category': selected_category
+    }
+    return render(request, 'main/product_list.html', context)
 
 
 
-def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
 
-    # рекомендации: товары той же категории, похожие по цене (±30%)
-    recommended_products = Product.objects.filter(
-        Q(category=product.category),
-        ~Q(id=product.id),
-        Q(price__gte=product.price * Decimal('0.7')),
-        Q(price__lte=product.price * Decimal('1.3'))
-    )[:4]
+def product_detail(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    cart = request.session.get('cart', {})
+    sizes = product.get_sizes_list()
 
-    return render(request, 'main/product_detail.html', {
+    # ✅ Похожие товары: те же категории, исключая сам товар
+    similar_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
+
+    context = {
         'product': product,
-        'recommended_products': recommended_products
-    })
+        'sizes': sizes,
+        'cart': cart,
+        'similar_products': similar_products,
+    }
+    return render(request, 'main/product_detail.html', context)
+
 
 
 def cart_add(request, product_id):
@@ -234,3 +239,8 @@ def cart_clear(request):
 
 def order_success(request):
     return render(request, 'main/order_success.html')
+
+def toggle_theme(request):
+    theme = request.session.get('theme', 'light')
+    request.session['theme'] = 'dark' if theme == 'light' else 'light'
+    return redirect(request.META.get('HTTP_REFERER', '/'))

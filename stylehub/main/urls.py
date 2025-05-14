@@ -7,7 +7,7 @@ urlpatterns = [
     path('logout/', views.user_logout, name='logout'),
     path('profile/', views.profile, name='profile'),
     path('', views.product_list, name='product_list'),
-    path('product/<int:pk>/', views.product_detail, name='product_detail'),
+    path('product/<int:product_id>/', views.product_detail, name='product_detail'),
     path('category/<slug:category_slug>/', views.product_list, name='product_list_by_category'),
     path('cart/', views.cart_detail, name='cart_detail'),
     path('cart/add/<int:product_id>/', views.cart_add, name='cart_add'),
@@ -19,4 +19,5 @@ urlpatterns = [
     path('cart/ajax/add/<int:product_id>/', views.ajax_cart_add, name='ajax_cart_add'),
     path('cart/clear/', views.cart_clear, name='cart_clear'),
     path('order/success/', views.order_success, name='order_success'),
+    path('toggle-theme/', views.toggle_theme, name='toggle_theme'),
 ]

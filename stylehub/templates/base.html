@@ -1,125 +1,67 @@
 {% load static %}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>StyleHub</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <!-- Toastr CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .navbar-glass {
-            background-color: rgba(255, 255, 255, 0.8) !important;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-        body.dark-mode .navbar-glass {
-            background-color: rgba(18, 18, 18, 0.8) !important;
-        }
-        body.dark-mode {
-            background-color: #121212;
-            color: #e0e0e0;
-        }
-        body.dark-mode .card {
-            background-color: #1e1e1e;
-            color: #e0e0e0;
-            border-color: #2e2e2e;
-        }
-        body.dark-mode .list-group-item {
-            background-color: #1e1e1e;
-            color: #e0e0e0;
-            border-color: #2e2e2e;
-        }
-        .card {
-            border: none;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.06);
-            border-radius: 16px;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
-        }
-        .btn {
-            border-radius: 12px;
-        }
-        .nav-link .badge {
-            font-size: 0.7rem;
-        }
-    </style>
-</head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-light fixed-top navbar-glass">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="{% url 'product_list' %}">StyleHub</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Переключить навигацию">
-            <span class="navbar-toggler-icon"></span>
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+  </head>
+  <body class="{% if request.session.theme == 'dark' %}dark{% endif %}">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+      <div class="container">
+        <a class="navbar-brand fw-bold" href="{% url 'product_list' %}">
+          StyleHub
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul class="navbar-nav align-items-center">
-                <li class="nav-item me-3">
-                    <form class="d-flex" method="get" action="{% url 'product_search' %}">
-                        <input class="form-control form-control-sm me-2" type="search" name="q" placeholder="Поиск" aria-label="Поиск">
-                        <button class="btn btn-sm btn-outline-success" type="submit">Найти</button>
-                    </form>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'cart_detail' %}" class="nav-link position-relative">
-                        🛒
-                        <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            {{ request.session.cart|length|default:0 }}
-                        </span>
-                    </a>
-                </li>
-                {% if user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}"><i class="bi bi-person"></i> Профиль</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Выйти</a></li>
-                {% else %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> Войти</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'register' %}"><i class="bi bi-person-plus"></i> Регистрация</a></li>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            {% if user.is_authenticated %}
+              <li class="nav-item"><a class="nav-link" href="{% url 'order_history' %}"><i class="bi bi-person-lines-fill"></i> Мои заказы</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Выйти</a></li>
+            {% else %}
+              <li class="nav-item"><a class="nav-link" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> Войти</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'register' %}"><i class="bi bi-person-plus"></i> Регистрация</a></li>
+            {% endif %}
+            <li class="nav-item">
+              <a class="nav-link position-relative" href="{% url 'cart_detail' %}">
+                <i class="bi bi-cart"></i>
+                {% if request.session.cart %}
+                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {{ request.session.cart|length }}
+                  </span>
                 {% endif %}
-                <li class="nav-item">
-                    <button id="toggleDarkMode" class="btn btn-sm btn-outline-secondary ms-2"><i class="bi bi-moon"></i></button>
-                </li>
-            </ul>
+              </a>
+            </li>
+            <li class="nav-item">
+              <form action="{% url 'toggle_theme' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn nav-link border-0 bg-transparent">
+                  {% if request.session.theme == 'dark' %}
+                    <i class="bi bi-sun"></i>
+                  {% else %}
+                    <i class="bi bi-moon"></i>
+                  {% endif %}
+                </button>
+              </form>
+            </li>
+          </ul>
         </div>
-    </div>
-</nav>
+      </div>
+    </nav>
 
-<div class="container" style="padding-top: 80px;">
-    {% block content %}
-    {% endblock %}
-</div>
+    <main class="container mt-4">
+      {% block content %}{% endblock %}
+    </main>
 
-<!-- JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-<script>
-    document.getElementById('toggleDarkMode').addEventListener('click', function() {
-        document.body.classList.toggle('dark-mode');
-        document.querySelector('nav').classList.toggle('navbar-dark-mode');
-    });
-
-    toastr.options = {
-        "closeButton": true,
-        "progressBar": true,
-        "positionClass": "toast-bottom-right",
-        "timeOut": "2000"
-    }
-</script>
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    {% block scripts %}{% endblock %}
+  </body>
 </html>

@@ -1,0 +1,70 @@
+/* ✅ Основной dark mode для body */
+body.dark {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+/* ✅ Ссылки */
+body.dark a {
+    color: #9ecbff;
+}
+
+/* ✅ Карточки товара */
+body.dark .card {
+    background-color: #1e1e1e;
+    border-color: #333;
+    color: #f5f5f5; /* <-- Читаемый текст в карточках */
+}
+
+/* ✅ Ссылки внутри карточек */
+body.dark .card a {
+    color: #9ecbff;
+}
+
+/* ✅ Таблицы */
+body.dark .table {
+    background-color: #1e1e1e;
+    color: #f5f5f5;
+}
+
+/* ✅ Кнопки (оставить стили Bootstrap) */
+body.dark .btn {
+    color: inherit;
+}
+
+/* ✅ Navbar */
+body.dark .navbar, body.dark .navbar-light {
+    background-color: #1e1e1e !important;
+    color: #f5f5f5;
+}
+
+/* ✅ Текст в навигации */
+body.dark .navbar a {
+    color: #e0e0e0;
+}
+
+/* ✅ Уведомления Toastr (если используешь) */
+body.dark #toast-container > div {
+    background-color: #333 !important;
+    color: #fff !important;
+}
+
+/* ✅ Пагинация */
+body.dark .page-link {
+    background-color: #1e1e1e;
+    border-color: #333;
+    color: #9ecbff;
+}
+
+/* ✅ Alert блоки (bootstrap) */
+body.dark .alert {
+    background-color: #1e1e1e;
+    border-color: #333;
+    color: #f5f5f5;
+}
+
+/* ✅ Мелкие текстовые элементы (например small) */
+body.dark small,
+body.dark .text-muted {
+    color: #bbbbbb !important;
+}
