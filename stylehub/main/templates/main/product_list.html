@@ -4,7 +4,7 @@
 <h2 class="text-center mb-4">Наши товары</h2>
 
 <div class="row mb-4">
-    <!-- ✅ Фильтр -->
+    <!-- Фильтр -->
     <div class="col-md-3">
         <h5 class="mb-3">Фильтр</h5>
         <form method="get" action="{% url 'product_list' %}">
@@ -31,7 +31,7 @@
         </form>
     </div>
 
-    <!-- ✅ Карточки товаров -->
+    <!-- Карточки товаров -->
     <div class="col-md-9">
         {% if products %}
         <div class="row row-cols-1 row-cols-md-3 g-4">
@@ -54,7 +54,7 @@
             {% endfor %}
         </div>
 
-        <!-- ✅ Пагинация -->
+        <!-- Пагинация -->
         <nav aria-label="Page navigation" class="mt-4">
             <ul class="pagination justify-content-center">
                 {% if products.has_previous %}

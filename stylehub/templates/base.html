@@ -20,7 +20,17 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
+          <ul class="navbar-nav ms-auto align-items-center">
+
+            <!-- 🔍 Поиск -->
+            <li class="nav-item me-2">
+              <form class="d-flex" role="search" method="get" action="{% url 'product_search' %}">
+                <input class="form-control form-control-sm me-2" type="search" name="q" placeholder="Поиск товаров..." aria-label="Search">
+                <button class="btn btn-outline-success btn-sm" type="submit"><i class="bi bi-search"></i></button>
+              </form>
+            </li>
+
+            <!-- 🔐 Пользователь -->
             {% if user.is_authenticated %}
               <li class="nav-item"><a class="nav-link" href="{% url 'order_history' %}"><i class="bi bi-person-lines-fill"></i> Мои заказы</a></li>
               <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Выйти</a></li>
@@ -28,8 +38,10 @@
               <li class="nav-item"><a class="nav-link" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> Войти</a></li>
               <li class="nav-item"><a class="nav-link" href="{% url 'register' %}"><i class="bi bi-person-plus"></i> Регистрация</a></li>
             {% endif %}
-            <li class="nav-item">
-              <a class="nav-link position-relative" href="{% url 'cart_detail' %}">
+
+            <!-- 🛒 Корзина -->
+            <li class="nav-item position-relative">
+              <a class="nav-link" href="{% url 'cart_detail' %}">
                 <i class="bi bi-cart"></i>
                 {% if request.session.cart %}
                   <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -38,6 +50,8 @@
                 {% endif %}
               </a>
             </li>
+
+            <!-- 🌗 Переключение темы -->
             <li class="nav-item">
               <form action="{% url 'toggle_theme' %}" method="post">
                 {% csrf_token %}
@@ -50,6 +64,7 @@
                 </button>
               </form>
             </li>
+
           </ul>
         </div>
       </div>

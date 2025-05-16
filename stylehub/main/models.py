@@ -28,7 +28,7 @@ class Product(models.Model):
         return self.sizes.split(',') if self.sizes else []
 
 class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)  # ✅ user может быть null
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)  # user может быть null
     name = models.CharField(max_length=200)
     phone = models.CharField(max_length=20)
     address = models.TextField()
@@ -43,7 +43,7 @@ class Order(models.Model):
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    size = models.CharField(max_length=10, blank=True)   # ✅ сохранение выбранного размера
+    size = models.CharField(max_length=10, blank=True)   # сохранение выбранного размера
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
 

@@ -51,7 +51,7 @@ def product_list(request, category_slug=None):
     categories = Category.objects.all()
     category = None
 
-    # ✅ Фильтр по категории из формы
+    # Фильтр по категории из формы
     selected_category = request.GET.get('category')
     if selected_category:
         category = get_object_or_404(Category, id=selected_category)
@@ -60,7 +60,7 @@ def product_list(request, category_slug=None):
         category = get_object_or_404(Category, slug=category_slug)
         products = products.filter(category=category)
 
-    # ✅ Фильтр по цене
+    # Фильтр по цене
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
     if min_price:
@@ -90,7 +90,7 @@ def product_detail(request, product_id):
     cart = request.session.get('cart', {})
     sizes = product.get_sizes_list()
 
-    # ✅ Похожие товары: те же категории, исключая сам товар
+    # Похожие товары: те же категории, исключая сам товар
     similar_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
 
     context = {
@@ -162,7 +162,7 @@ def order_create(request):
         if form.is_valid():
             order = form.save(commit=False)
             if request.user.is_authenticated:
-                order.user = request.user    # ✅ если пользователь есть
+                order.user = request.user    # если пользователь есть
             order.save()
 
             for key, quantity in cart.items():
@@ -220,10 +220,13 @@ def edit_profile(request):
 
 def product_search(request):
     query = request.GET.get('q')
-    products = Product.objects.filter(
-        Q(name__icontains=query) | Q(description__icontains=query)
-    ) if query else Product.objects.none()
-    return render(request, 'main/product_search.html', {'products': products, 'query': query})
+    results = []
+    if query:
+        results = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains=query))
+    return render(request, 'main/product_search.html', {
+        'query': query,
+        'results': results
+    })
 
 def ajax_cart_add(request, product_id):
     cart = request.session.get('cart', {})
