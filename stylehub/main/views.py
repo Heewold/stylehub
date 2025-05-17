@@ -226,7 +226,7 @@ def product_search(request):
     return render(request, 'main/product_search.html', {
         'query': query,
         'results': results
-    })
+    });
 
 def ajax_cart_add(request, product_id):
     cart = request.session.get('cart', {})
